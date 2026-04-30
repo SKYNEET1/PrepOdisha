@@ -1,6 +1,7 @@
 # PrepOdisha Online Education Platform (MERN App) 
 
-![Main Page](images/mainpage.png)
+<img width="628" height="885" alt="image" src="https://github.com/user-attachments/assets/42b151c7-ded1-446a-b39f-d8b6336131f3" />
+
 
 ## Project Description
 

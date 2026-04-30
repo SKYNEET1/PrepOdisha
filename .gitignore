@@ -16,3 +16,9 @@ yarn-error.log
 # VS Code
 .vscode/
 node_modules
+git.dev
+git.test
+server/git.dev
+server/git.test
+client/git.dev
+client/git.test

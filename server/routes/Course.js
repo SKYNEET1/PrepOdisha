@@ -50,15 +50,24 @@ const {
 
 // Importing Middlewares
 const { auth, isInstructor, isStudent, isAdmin } = require("../middlewares/auth")
+const { validateRequest } = require("../middlewares/validateRequest")
+
+// Importing Validators
+const {
+  createCourseValidation,
+  createSectionValidation,
+  createSubSectionValidation,
+  createCategoryValidation
+} = require("../validations/courseValidation")
 
 // ********************************************************************************************************
 //                                      Course routes
 // ********************************************************************************************************
 
 // Courses can Only be Created by Instructors
-router.post("/createCourse", auth, isInstructor, createCourse)
+router.post("/createCourse", auth, isInstructor, createCourseValidation, validateRequest, createCourse)
 //Add a Section to a Course
-router.post("/addSection", auth, isInstructor, createSection)
+router.post("/addSection", auth, isInstructor, createSectionValidation, validateRequest, createSection)
 // Update a Section
 router.post("/updateSection", auth, isInstructor, updateSection)
 // Delete a Section
@@ -68,7 +77,7 @@ router.post("/updateSubSection", auth, isInstructor, updateSubSection)
 // Delete Sub Section
 router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
 // Add a Sub Section to a Section
-router.post("/addSubSection", auth, isInstructor, createSubSection)
+router.post("/addSubSection", auth, isInstructor, createSubSectionValidation, validateRequest, createSubSection)
 // Get all Registered Courses
 router.get("/getAllCourses", getAllCourses)
 // Get Details for a Specific Courses
@@ -89,7 +98,7 @@ router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress);
 // ********************************************************************************************************
 // Category can Only be Created by Admin
 // TODO: Put IsAdmin Middleware here
-router.post("/createCategory", auth, isAdmin, createCategory)
+router.post("/createCategory", auth, isAdmin, createCategoryValidation, validateRequest, createCategory)
 router.get("/showAllCategories", showAllCategories)
 router.post("/getCategoryPageDetails", categoryPageDetails)
 

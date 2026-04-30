@@ -18,12 +18,15 @@ console.log({
   instructorDashboard,
 });
 
+const { validateRequest } = require("../middlewares/validateRequest");
+const { updateProfileValidation } = require("../validations/profileValidation");
+
 // ********************************************************************************************************
 //                                      Profile routes
 // ********************************************************************************************************
 // Delet User Account
 router.delete("/deleteProfile", auth, deleteAccount)
-router.put("/updateProfile", auth, updateProfile)
+router.put("/updateProfile", auth, updateProfileValidation, validateRequest, updateProfile)
 router.get("/getUserDetails", auth, getAllUserDetails)
 // Get Enrolled Courses
 router.get("/getEnrolledCourses", auth, getEnrolledCourses)

@@ -141,7 +141,7 @@ exports.login = async (req, res) => {
         { email: user.email, 
           id: user._id, 
           accountType: user.accountType },
-        process.env.JWT_SECRET,
+        process.env.JWT_KEY,
         {
           expiresIn: "24h",
         }
@@ -202,15 +202,14 @@ exports.sendotp = async (req, res) => {
       specialChars: false,
     });
 
-    // check unique otp or not
-    const result = await OTP.findOne({ otp: otp });
-    console.log("Result is Generate OTP Func");
-    console.log("OTP", otp);
-    console.log("Result", result);
+    let result = await OTP.findOne({ otp: otp });
     while (result) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
+        lowerCaseAlphabets: false,
+        specialChars: false,
       });
+      result = await OTP.findOne({ otp: otp });
     }
 
     // creating otp payload

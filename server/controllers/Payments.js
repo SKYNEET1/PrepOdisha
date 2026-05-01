@@ -36,7 +36,7 @@ exports.capturePayment = async (req, res) => {
 
       // user already pay for the same course
       const uid = new mongoose.Types.ObjectId(userId);
-      if (course.studentsEnroled.includes(uid)) {
+      if (course.studentsEnrolled.includes(uid)) {
         return res.status(400).json({ success: false, message: "Already enrolled in course" });
       }
 
@@ -61,9 +61,9 @@ exports.capturePayment = async (req, res) => {
   
       return res.status(200).json({
         success: true,
-        courseName : course.courseName , 
-        courseDescription : course.courseDescription , 
-        thumbnail : course.thumbnail ,
+        courseName : courses.courseName , 
+        courseDescription : courses.courseDescription , 
+        thumbnail : courses.thumbnail ,
         orderId : paymentResponse.id ,
         currency : paymentResponse.currency , 
         amount : paymentResponse.amount , 
@@ -71,7 +71,7 @@ exports.capturePayment = async (req, res) => {
       });
     }
     catch(err){
-      console.error("Error in capturePayment:", error);
+      console.error("Error in capturePayment:", err);
       return res.status(500).json({ success: false, message: "Could not initiate order." });
     }
 
@@ -170,7 +170,7 @@ const enrollStudents = async (courses, userId) => {
       // find the cours and enroll the student in it
       const enrolledCourse = await Course.findOneAndUpdate(
         { _id: courseId },
-        { $push: { studentsEnroled: userId } },
+        { $push: { studentsEnrolled: userId } },
         { new: true }
       );
 

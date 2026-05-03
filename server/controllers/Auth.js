@@ -1,11 +1,16 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
-const OTP = require("../models/OTP");
 const jwt = require("jsonwebtoken");
-const otpGenerator = require("otp-generator");
 const mailSender = require("../utils/mailSender");
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 const Profile = require("../models/Profile");
+
+const { hmacotp, timingSafeEqualHex, generateOTP } = require("../utils/OTPcreation");
+const { KEYS } = require("../service/cacheService");
+const redisSetUp = require("../config/redisSetUp");
+const sendOTPMail = require("../service/mail");
+const client = redisSetUp();
+
 require("dotenv").config();
 
 // Signup Controller for Registering USers
@@ -56,22 +61,34 @@ exports.signup = async (req, res) => {
       });
     }
 
-    // Find the most recent OTP for the email
-    const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
-    console.log(response);
-    if (response.length === 0) {
-      // OTP not found for the email
+    // Verify OTP using Redis
+    const key = KEYS('otp', 'data', email);
+    const storedHotp = await client.hget(key, 'hash');
+    if (!storedHotp) {
       return res.status(400).json({
         success: false,
-        message: "The OTP is not valid",
+        message: "OTP expired or not found",
       });
-    } else if (otp !== response[0].otp) {
-      // Invalid OTP
+    }
+
+    const newOtpHash = hmacotp(otp, email);
+    if (!newOtpHash) {
+      return res.status(400).json({
+        success: false,
+        message: "New OTP could not be encrypted",
+      });
+    }
+
+    const isValid = timingSafeEqualHex(storedHotp, newOtpHash);
+    if (!isValid) {
       return res.status(400).json({
         success: false,
         message: "The OTP is not valid",
       });
     }
+
+    // Clear OTP from Redis after successful verification
+    await client.del(key);
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -91,7 +108,7 @@ exports.signup = async (req, res) => {
       password: hashedPassword,
       accountType: accountType,
       additionalDetails: profileDetails._id,
-      image: `https://api.dicebear.cpm/5.x/initials/svg?seed=${firstName} ${lastName}`,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
 
     return res.status(200).json({
@@ -195,33 +212,61 @@ exports.sendotp = async (req, res) => {
       });
     }
 
-    // generate otp
-    var otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
-
-    let result = await OTP.findOne({ otp: otp });
-    while (result) {
-      otp = otpGenerator.generate(6, {
-        upperCaseAlphabets: false,
-        lowerCaseAlphabets: false,
-        specialChars: false,
+    const cooldown_key = KEYS('otp', 'cooldown', email);
+    const cooldown_TTL = await client.ttl(cooldown_key);
+    if (cooldown_TTL > 0) {
+      return res.status(429).json({
+        success: false,
+        message: `Please wait ${cooldown_TTL} seconds before requesting OTP again`
       });
-      result = await OTP.findOne({ otp: otp });
     }
 
-    // creating otp payload
-    const otpPayload = { email, otp };
+    const attempt_key = KEYS('otp', 'attempt', email);
+    const attempt = await client.get(attempt_key) || 0;
 
-    // create an entry in db for otp
-    const otpBody = await OTP.create(otpPayload);
-    console.log("OTP Body", otpBody);
+    if (Number(attempt) >= 5) {
+      return res.status(403).json({
+        success: false,
+        message: "You have exceeded the maximum OTP requests today"
+      });
+    }
+
+    // generate otp
+    const otp = generateOTP();
+    if (!otp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP generation error"
+      });
+    }
+
+    const hOtp = hmacotp(otp, email);
+    if (!hOtp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP encryption error"
+      });
+    }
+
+    const key = KEYS('otp', 'data', email);
+    const ttl = 10 * 60;
+
+    await client
+      .multi()
+      .hset(key, "hash", hOtp)
+      .expire(key, ttl)
+      .exec();
+
+    await client.incr(attempt_key);
+    await client.expire(attempt_key, 24 * 60 * 60);
+    await client.set(cooldown_key, 1, "EX", 2 * 60);
+
+    console.log("Generated OTP (only show in development):", otp);
+    await sendOTPMail(email, otp);
+
     res.status(200).json({
       success: true,
       message: `OTP Sent Successfully`,
-      otp,
     });
   } catch (error) {
     console.log(error.message);

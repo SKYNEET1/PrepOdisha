@@ -5,51 +5,40 @@ const router = express.Router()
 // Import the Controllers
 
 // Course Controllers Import
-const {
-  createCourse,
-  getAllCourses,
-  getCourseDetails,
-  getFullCourseDetails,
-  editCourse,
-  getInstructorCourses,
-  deleteCourse,
-} = require("../controllers/Course")
+const { createCourse } = require("../controllers/Course/createCourse");
+const { getAllCourses } = require("../controllers/Course/getAllCourses");
+const { getCourseDetails } = require("../controllers/Course/getCourseDetails");
+const { getFullCourseDetails } = require("../controllers/Course/getFullCourseDetails");
+const { editCourse } = require("../controllers/Course/editCourse");
+const { getInstructorCourses } = require("../controllers/Course/getInstructorCourses");
+const { deleteCourse } = require("../controllers/Course/deleteCourse");
 
 
 // Categories Controllers Import
-const {
-  showAllCategories,
-  createCategory,
-  categoryPageDetails,
-} = require("../controllers/Category")
+const { showAllCategories } = require("../controllers/Category/showAllCategories");
+const { createCategory } = require("../controllers/Category/createCategory");
+const { categoryPageDetails } = require("../controllers/Category/categoryPageDetails");
 
 // Sections Controllers Import
-const {
-  createSection,
-  updateSection,
-  deleteSection,
-} = require("../controllers/Section")
+const { createSection } = require("../controllers/Section/createSection");
+const { updateSection } = require("../controllers/Section/updateSection");
+const { deleteSection } = require("../controllers/Section/deleteSection");
 
 // Sub-Sections Controllers Import
-const {
-  createSubSection,
-  updateSubSection,
-  deleteSubSection,
-} = require("../controllers/Subsection")
+const { createSubSection } = require("../controllers/Subsection/createSubSection");
+const { updateSubSection } = require("../controllers/Subsection/updateSubSection");
+const { deleteSubSection } = require("../controllers/Subsection/deleteSubSection");
 
 // Rating Controllers Import
-const {
-  createRating,
-  getAverageRating,
-  getAllRating,
-} = require("../controllers/RatingAndReview")
+const { createRating } = require("../controllers/RatingAndReview/createRating");
+const { getAverageRating } = require("../controllers/RatingAndReview/getAverageRating");
+const { getAllRating } = require("../controllers/RatingAndReview/getAllRating");
 
-const {
-  updateCourseProgress
-} = require("../controllers/courseProgress");
+const { updateCourseProgress } = require("../controllers/courseProgress/updateCourseProgress");;
 
 // Importing Middlewares
-const { auth, isInstructor, isStudent, isAdmin } = require("../middlewares/auth")
+const { auth } = require("../middlewares/auth");
+const { isInstructor, isStudent, isAdmin } = require("../middlewares/authrisedUser");
 const { validateRequest } = require("../middlewares/validateRequest")
 
 // Importing Validators

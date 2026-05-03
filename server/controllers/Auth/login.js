@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
         }
 
         // Generate JWT token and Compare Password
-        if (comparePassword(password, user.password)) {
+        if (await comparePassword(password, user.password)) {
             const accessToken = generateAccessToken(
                 user.email,
                 user._id,

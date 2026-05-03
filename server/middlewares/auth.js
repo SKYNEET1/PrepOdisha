@@ -1,6 +1,4 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-dotenv.config();
 
 // This function is used as middleware to authenticate user requests
 exports.auth = async (req, res, next) => {
@@ -68,56 +66,3 @@ exports.auth = async (req, res, next) => {
     }
 };
 
-// Middleware to check if user is a Student
-exports.isStudent = async (req, res, next) => {
-    try {
-        if (req.user.accountType !== "Student") {
-            return res.status(401).json({
-                success: false,
-                message: "This is a protected route for Students only",
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "User role cannot be verified",
-        });
-    }
-};
-
-// Middleware to check if user is an Instructor
-exports.isInstructor = async (req, res, next) => {
-    try {
-        if (req.user.accountType !== "Instructor") {
-            return res.status(401).json({
-                success: false,
-                message: "This is a protected route for Instructors only",
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "User role cannot be verified",
-        });
-    }
-};
-
-// Middleware to check if user is an Admin
-exports.isAdmin = async (req, res, next) => {
-    try {
-        if (req.user.accountType !== "Admin") {
-            return res.status(401).json({
-                success: false,
-                message: "This is a protected route for Admins only",
-            });
-        }
-        next();
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "User role cannot be verified",
-        });
-    }
-};

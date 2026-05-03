@@ -4,12 +4,10 @@ const router = express.Router()
 
 
 
-const {
-  resetPasswordToken,
-  resetPassword,
-} = require("../controllers/ResetPassword")
+const { resetPasswordToken } = require("../controllers/ResetPassword/resetPasswordToken");
+const { resetPassword } = require("../controllers/ResetPassword/resetPassword");
 
-const { auth } = require("../middlewares/auth")
+const { auth } = require("../middlewares/auth");
 const { login } = require("../controllers/Auth/login")
 const { signup } = require("../controllers/Auth/signup")
 const { sendotp } = require("../controllers/Auth/sendOTP")

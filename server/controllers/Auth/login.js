@@ -33,6 +33,23 @@ exports.login = async (req, res) => {
             // Save token to user document in database
             user.token = accessToken;
             user.password = undefined;
+
+            // Sync with Chat Service
+            try {
+                const axios = require('axios');
+                await axios.post('http://localhost:5001/api/v1/chat/sync-user', {
+                    userId: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    image: user.image,
+                    accountType: user.accountType
+                });
+            } catch (chatError) {
+                console.error("Failed to sync user with Chat Service:", chatError.message);
+                // Don't fail login if chat sync fails
+            }
+
             res.cookie('token', accessToken, {
                 httpOnly: true,
                 secure: true,

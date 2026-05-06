@@ -131,6 +131,16 @@ function Navbar() {
               )}
             </Link>
           )}
+          {token !== null && (
+            <a 
+              href={`http://localhost:4002/?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-[8px] border border-richblack-700 bg-richblack-800 px-[12px] py-[8px] text-richblack-100 hover:text-yellow-50 transition-all duration-200"
+            >
+              Chat
+            </a>
+          )}
           {token === null && (
             <Link to="/login">
               <button className="rounded-[8px] border border-richblack-700 bg-richblack-800 px-[12px] py-[8px] text-richblack-100">

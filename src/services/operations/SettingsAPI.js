@@ -42,7 +42,7 @@ export function updateDisplayPicture(token, formData) {
   }
 }
 
-export function updateProfile(token, formData) {
+export function updateProfile(token, formData, navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Loading...")
     try {
@@ -61,6 +61,7 @@ export function updateProfile(token, formData) {
         setUser({ ...response.data.updatedUserDetails, image: userImage })
       )
       toast.success("Profile Updated Successfully")
+      navigate("/dashboard/my-profile")
     } catch (error) {
       console.log("UPDATE_PROFILE_API API ERROR............", error)
       toast.error("Could Not Update Profile")

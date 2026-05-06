@@ -35,7 +35,23 @@ exports.editCourse = async (req, res) => {
     for (const key in updates) {
       if (updates.hasOwnProperty(key)) {
         if (key === "tag" || key === "instructions") {
-          course[key] = JSON.parse(updates[key])
+          course[key] =
+            typeof updates[key] === "string"
+              ? JSON.parse(updates[key])
+              : updates[key]
+        } else if (key === "category") {
+          // If category is updated, we need to handle the re-association
+          if (course.category.toString() !== updates.category.toString()) {
+            // Remove from old category
+            await Category.findByIdAndUpdate(course.category, {
+              $pull: { courses: courseId },
+            })
+            // Add to new category
+            await Category.findByIdAndUpdate(updates.category, {
+              $push: { courses: courseId },
+            })
+          }
+          course[key] = updates[key]
         } else {
           course[key] = updates[key]
         }

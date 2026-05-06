@@ -2,6 +2,7 @@ import "./App.css";
 import {Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home"
 import Navbar from "./components/common/Navbar"
+import AIAssistant from "./components/common/AIAssistant"
 import OpenRoute from "./components/core/Auth/OpenRoute"
 
 import Login from "./pages/Login"
@@ -42,6 +43,7 @@ function App() {
   return (
    <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
     <Navbar/>
+    <AIAssistant />
     <Routes>
       <Route path="/" element={<Home/>} />
       <Route path="catalog/:catalogName" element={<Catalog/>} />

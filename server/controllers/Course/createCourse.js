@@ -1,11 +1,7 @@
 const Course = require("../../models/Course")
 const Category = require("../../models/Category")
-const Section = require("../../models/Section")
-const SubSection = require("../../models/SubSection")
 const User = require("../../models/User")
 const { uploadImageToCloudinary } = require("../../utils/imageUploader")
-const CourseProgress = require("../../models/CourseProgress")
-const { convertSecondsToDuration } = require("../../utils/secToDuration")
 
 
 // Function to create a new course
@@ -30,8 +26,11 @@ exports.createCourse = async (req, res) => {
     const thumbnail = req.files ? req.files.thumbnailImage : undefined
 
     // Convert the tag and instructions from stringified Array to Array
-    const tag = JSON.parse(_tag)
-    const instructions = JSON.parse(_instructions)
+    const tag = typeof _tag === "string" ? JSON.parse(_tag) : _tag
+    const instructions =
+      typeof _instructions === "string"
+        ? JSON.parse(_instructions)
+        : _instructions
 
     console.log("tag", tag)
     console.log("instructions", instructions)
@@ -109,7 +108,7 @@ exports.createCourse = async (req, res) => {
     )
     // Add the new course to the Categories
     const categoryDetails2 = await Category.findByIdAndUpdate(
-      { _id: category },
+      category,
       {
         $push: {
           courses: newCourse._id,

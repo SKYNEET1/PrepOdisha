@@ -86,7 +86,7 @@ const AIAssistant = () => {
                                 <BsRobot size={22} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-richblack-5">StudyNotion AI</h3>
+                                <h3 className="text-sm font-bold text-richblack-5">OdishaPrep AI</h3>
                                 <p className="text-[10px] text-caribbeangreen-200">Online | Always here to help</p>
                             </div>
                         </div>

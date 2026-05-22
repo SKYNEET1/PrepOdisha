@@ -59,6 +59,16 @@ export default function ChipInput({
     setChips(newChips)
   }
 
+  // Function to handle input when user clicks away
+  const handleBlur = (event) => {
+    const chipValue = event.target.value.trim()
+    if (chipValue && !chips.includes(chipValue)) {
+      const newChips = [...chips, chipValue]
+      setChips(newChips)
+      event.target.value = ""
+    }
+  }
+
   // Render the component
   return (
     <div className="flex flex-col space-y-2">
@@ -93,6 +103,7 @@ export default function ChipInput({
           type="text"
           placeholder={placeholder}
           onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
           className="form-style w-full"
         />
       </div>

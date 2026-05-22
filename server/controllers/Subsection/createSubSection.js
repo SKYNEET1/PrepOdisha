@@ -12,9 +12,9 @@ exports.createSubSection = async (req, res) => {
     const video = req.files ? req.files.video : undefined
 
     // Check if all necessary fields are provided
-    if (!sectionId || !title || !description || !video || !timeDuration) {
+    if (!sectionId || !title || !description || !video) {
       return res
-        .status(404)
+        .status(400)
         .json({ success: false, message: "All Fields are Required" })
     }
     console.log(video)

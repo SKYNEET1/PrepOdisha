@@ -22,7 +22,7 @@ const Catalog = () => {
         const getCategories = async() => {
             const res = await apiConnector("GET", categories.CATEGORIES_API);
             const category_id = 
-            res?.data?.data?.filter((ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName)[0]._id;
+            res?.data?.data?.find((ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName)?._id;
             setCategoryId(category_id);
         }
         getCategories();

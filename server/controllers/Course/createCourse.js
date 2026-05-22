@@ -54,15 +54,13 @@ exports.createCourse = async (req, res) => {
     if (!status || status === undefined) {
       status = "Draft"
     }
-    // Check if the user is an instructor
-    const instructorDetails = await User.findById(userId, {
-      accountType: "Instructor",
-    })
+    // Check if the user is an instructor or admin
+    const instructorDetails = await User.findById(userId);
 
-    if (!instructorDetails) {
+    if (!instructorDetails || (instructorDetails.accountType !== "Instructor" && instructorDetails.accountType !== "Admin")) {
       return res.status(404).json({
         success: false,
-        message: "Instructor Details Not Found",
+        message: "Instructor/Admin Details Not Found",
       })
     }
 
